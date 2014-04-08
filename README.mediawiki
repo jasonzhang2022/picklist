@@ -6,13 +6,13 @@ a picklist in angular js
 angularjs and bootstrap.css
 
 ==Usage==
-# add [src/main/webapp/picklist.js picklist.js] after angular.js. Make your module depends on '''fxpicklist'''
+# add [[src/main/webapp/picklist.js picklist.js]] after angular.js. Make your module depends on '''fxpicklist'''
 # To use pick list just add '''data-picklist''' to your regular <select> element
 ## ngOptions elements has to be an array. Object is not supported right now
 ## the selected value is the array item, you can not use property of array item as selected valye
 
 ==Example==
-[src/main/webapp/index.html Example]
+[[src/main/webapp/index.html Example]]
 
 ==test==
 run mvn test
