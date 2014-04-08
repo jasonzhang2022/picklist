@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html data-ng-app="picklisttest">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="test picklist">
+<meta name="author" content="jason zhang">
+
+
+
+<title>Edit or View Instance</title>
+
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-theme.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+	<div class="container">
+
+		<form class="form-horizontal" name="test">
+
+			<div class="form-group">
+				<label class="col-md-2 control-label">Test Property</label>
+				<div class="col-md-4">
+					<input class="form-control" name="test" type="text" />
+				</div>
+
+			</div>
+
+			<div class="form-group">
+				<label class="col-md-2 control-label">Pick List Test</label>
+				<div class="col-md-4" data-ng-controller="testCtrl">
+					<select name="pktest"  size="20" data-ng-options="v.name for v in toptions" 
+					data-picklist=""
+					multiple data-ng-model="tselected">
+					</select>
+				</div>
+
+			</div>
+			<input class="form-control" name="test" type="text" />
+
+		</form>
+
+
+
+	</div>
+	<!-- /container -->
+
+
+	<!-- Javascripts-->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<div id="scripts">
+		<!-- Angular js -->
+		<script type="text/javascript" src="js/angular.js"></script>
+		<script type="text/javascript" src="picklist.js"></script>
+		<script type="text/javascript" src="picklist_test.js"></script>
+
+
+	</div>
+
+</body>
+</html>
