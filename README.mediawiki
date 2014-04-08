@@ -11,7 +11,7 @@ angularjs and bootstrap.css
 # To use pick list just add '''data-picklist''' to your regular <select> element
 ## ngOptions elements expression has to return an array. Object is not supported right now
 
-
+[[src/main/webapp/index.html|Example]]
 ==test==
 run mvn test
 
