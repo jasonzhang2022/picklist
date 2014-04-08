@@ -1,0 +1,19 @@
+==picklist==
+
+a picklist in angular js
+
+==requirement==
+angularjs and bootstrap.css
+
+==Usage==
+[[src/main/webapp/picklist.js|download]]
+# add [[src/main/webapp/picklist.js|picklist.js]] after angular.js. Make your module depends on '''fxpicklist'''
+# To use pick list just add '''data-picklist''' to your regular <select> element
+## ngOptions elements expression has to return an array. Object is not supported right now
+
+[[src/main/webapp/index.html|Example]]
+==test==
+run mvn test
+
+==License==
+MIT
