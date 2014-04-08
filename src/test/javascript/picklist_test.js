@@ -43,14 +43,33 @@ describe(
 				$scope.tselected=[$scope.toptions[4], $scope.toptions[5]];
 				return $scope;
 			}
+			function setupPickListTestScope1(){
+				$scope=$rootScope.$new();
+				
+				$scope.toptions=new Array();
+				
+				for(var i=0; i<10; i++){
+					$scope.toptions.push({
+						name: " display name"+i,
+						value: "value"+i, 
+						index: i
+					});
+				}
+				
+				$scope.tselected=[$scope.toptions[4].value, $scope.toptions[5].value];
+				return $scope;
+			}
 
-			
+			var template="<form name='test'>" +
+			"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
+			"</form>"
+			;
+			var template1="<form name='test'>" +
+			"<select name='pktest'  size='20' data-ng-options='v.value as v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
+			"</form>"
+			;
 			it("pick list: test initialization", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -72,10 +91,6 @@ describe(
 			});
 			it("pick list: observe original options", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -102,10 +117,6 @@ describe(
 			
 			it("pick list: observe model", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -138,10 +149,6 @@ describe(
 			});
 			it("pick list: right shift", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -183,10 +190,6 @@ describe(
 			
 			it("pick list: left shift", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -237,10 +240,6 @@ describe(
 			
 			it("pick list: up", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -282,10 +281,6 @@ describe(
 			});
 			it("pick list: up edge case", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -328,10 +323,6 @@ describe(
 			});
 			it("pick list: down", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -375,10 +366,6 @@ describe(
 			});
 			it("pick list: down edge case", function() {
 				var templateCache = $myInjector.get("$templateCache");
-				var template="<form name='test'>" +
-						"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
-						"</form>"
-						;
 				var $compile=$myInjector.get("$compile");
 				var $scope=setupPickListTestScope();
 			
@@ -417,5 +404,90 @@ describe(
 				expect($scope.tselected[9]).toBe($scope.toptions[9]);
 				expect($scope.tselected[7]).toBe($scope.toptions[8]);
 				expect($scope.tselected[8]).toBe($scope.toptions[7]);
+			});
+			
+			it("pick list: left shift with value function", function() {
+				var templateCache = $myInjector.get("$templateCache");
+				var $compile=$myInjector.get("$compile");
+				var $scope=setupPickListTestScope1();
+			
+				
+				//intialization
+				element=$compile(template1)($scope);
+				$scope.$digest();
+				
+				var first=angular.element(element.find("select")[0]);
+				var second=angular.element(element.find("select")[1]);
+				
+				var pickscope=first.scope();
+				
+				//-------------left shift;
+				var firstopt=pickscope.destoptions[0];
+				pickscope.picklist_dest.push(firstopt);
+				pickscope.leftShift();
+				$scope.$digest();
+				
+				
+				expect(first.find("option").length).toBe(9);
+				expect(second.find("option").length).toBe(1);
+				expect($scope.tselected.length).toBe(1);
+				expect($scope.tselected[0]).toEqual($scope.toptions[5].value);
+				
+				
+				//-----------left shift all: one element
+				pickscope.leftShiftAll();
+				$scope.$digest();
+				
+				expect(first.find("option").length).toBe(10);
+				expect(second.find("option").length).toBe(0);
+				expect($scope.tselected.length).toBe(0);
+				
+				//-----------left shift all: many element
+				pickscope.rightShiftAll();
+				$scope.$digest();
+				pickscope.leftShiftAll();
+				$scope.$digest();
+				
+				expect(first.find("option").length).toBe(10);
+				expect(second.find("option").length).toBe(0);
+				expect($scope.tselected.length).toBe(0);
+			});
+			
+			it("pick list: right shift with value", function() {
+				var templateCache = $myInjector.get("$templateCache");
+				var $compile=$myInjector.get("$compile");
+				var $scope=setupPickListTestScope1();
+			
+				
+				//intialization
+				element=$compile(template1)($scope);
+				$scope.$digest();
+				
+				var first=angular.element(element.find("select")[0]);
+				var second=angular.element(element.find("select")[1]);
+				
+				var pickscope=first.scope();
+				
+				//-------------right shift;
+				var firstopt=pickscope.srcoptions[1];
+				pickscope.picklist_src.push(firstopt);
+				pickscope.rightShift();
+				$scope.$digest();
+				
+				
+				expect(first.find("option").length).toBe(7);
+				expect(second.find("option").length).toBe(3);
+				expect($scope.tselected.length).toBe(3);
+				expect($scope.tselected[2]).toBe(firstopt.value);
+				
+				//-----------right shift all
+				pickscope.rightShiftAll();
+				$scope.$digest();
+				
+				
+				expect(first.find("option").length).toBe(0);
+				expect(second.find("option").length).toBe(10);
+				expect($scope.tselected.length).toBe(10);
+				
 			});
 });

@@ -21,55 +21,122 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 			$scope.ngOptions=$attrs.ngOptions;
 			$scope.ngModel=$attrs.ngModel;
 			
+			//hold the selection.
 			$scope.picklist_src=[];
 			$scope.picklist_dest=[];
-			var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
-			//
-			$scope.srcoptionsExp = $scope.ngOptions.match(NG_OPTIONS_REGEXP)[7];
 			
+			// match parsing is from angular js
+			var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
+			var match= $scope.ngOptions.match(NG_OPTIONS_REGEXP);
+			$scope.srcoptionsExp = match[7];
+			var displayFn = $parse(match[2] || match[1]),
+			valueName = match[4] || match[6],
+			keyName = match[5],
+			groupByFn = $parse(match[3] || ''),
+			valueFn = $parse(match[2] ? match[1] : valueName),
+			valuesFn = $parse(match[7]),
+			track = match[8],
+			trackFn = track ? $parse(match[8]) : null;
+			
+			var hasValueFn=match[2]?true:false;
+			
+			var modelFn=$parse($scope.ngModel);
+			
+			  $scope.srcoptions=[];
+			 
+			  
+			  //sync destination to model.
+			  $scope.$watchCollection("destoptions", function(newv, oldv){
+				  if (!angular.isDefined(newv)){
+					  //first call
+					  return;
+				  }
+				 var models=modelFn($scope);
+				 models.length=0;
+				 angular.forEach($scope.destoptions, function(item){
+					 models.push($scope.itemToValue(item));
+				 })
+			  });
+			  
+			 
+	         $scope.valueToItem=function(value){
+	            if (!hasValueFn){
+	            	return value;
+	            }	
+	            return $scope.valueMap[value];
+	         };
+	       
+	        $scope.itemToValue=function(item){
+	        	 if (!hasValueFn){
+		            	return item;
+		           }	
+	        	 var local={};
+	        	 local[valueName]=item;
+	        	return valueFn($scope, local);
+	        };
+	        //set it to $scope.srcoptions
+	        $scope.init=function(){
+	        	$scope.valueMap={};
+	        	var getter = $parse($scope.srcoptionsExp);
+	        	var options=getter($scope);
+	        	$scope.srcoptions.length=0;
+	        	for(var i=0; i<options.length; i++){
+	        		$scope.srcoptions.push(options[i]);
+	        		//map option value to object
+	        		if (hasValueFn){
+	        			var value=$scope.itemToValue(options[i]);
+	        			$scope.valueMap[value]=options[i];
+	        		}
+	        	}
+	        	var models=$parse($scope.ngModel)($scope);
+	        	$scope.destoptions=[];
+	        	$scope.destoptions.length=0;
+	        	angular.forEach(models, function(v){
+	        		$scope.destoptions.push($scope.valueToItem(v));
+	        	});
+	        	$scope.removeLeftFromRight($scope.destoptions, $scope.srcoptions);
+	        };
+	        
+	        
+	        //TODO remove watcher during destruction.
+	        $scope.$watchCollection($scope.srcoptionsExp, $scope.init);
+	        $scope.$watchCollection($scope.ngModel, $scope.init);
+	        
+				
 			$scope.rightShift=function(){
-				var models=$parse($scope.ngModel)($scope);
 				for (var i=0; i<$scope.picklist_src.length; i++){
-					models.push($scope.picklist_src[i]);
+					$scope.destoptions.push($scope.picklist_src[i]);
 				}
 				$scope.removeLeftFromRight($scope.picklist_src, $scope.srcoptions);
-				$scope.picklist_src=[];
+				$scope.picklist_src.length=0;
 			};
 			$scope.rightShiftAll=function(){
-				var models=$parse($scope.ngModel)($scope);
 				for (var i=0; i<$scope.srcoptions.length; i++){
-					models.push($scope.srcoptions[i]);
+					$scope.destoptions.push($scope.srcoptions[i]);
 				}
-				$scope.picklist_src=[];
-				while($scope.srcoptions.length>0){
-					$scope.srcoptions.pop();
-				}
+				$scope.picklist_src.length=0;
+				$scope.srcoptions.length=0;
 			};
 			$scope.leftShift=function(){
 				for (var i=0; i<$scope.picklist_dest.length; i++){
 					$scope.srcoptions.push($scope.picklist_dest[i]);
 				}
-				var models=$parse($scope.ngModel)($scope);
-				$scope.removeLeftFromRight($scope.picklist_dest, models);
+				$scope.removeLeftFromRight($scope.picklist_dest, $scope.destoptions);
+				$scope.picklist_dest.length=0;
 			};
 			
 			$scope.leftShiftAll=function(){
-				var models=$parse($scope.ngModel)($scope);
-				for (var i=0; i<models.length; i++){
-					$scope.srcoptions.push(models[i]);
+				for (var i=0; i<$scope.destoptions.length; i++){
+					$scope.srcoptions.push($scope.destoptions[i]);
 				}
-				$scope.picklist_dest=[];
-				//do not call this
-				while(models.length>0){
-					models.pop();
-				}
+				$scope.picklist_dest.length=0;
+				$scope.destoptions.length=0;
 			};
 			$scope.arrowUp=function(){
-				var models=$parse($scope.ngModel)($scope);
 				var idxs=[];
 				for (var i=0; i<$scope.picklist_dest.length; i++){
-					for (var j=0; j<models.length; j++){
-						if($scope.picklist_dest[i]==models[j]){
+					for (var j=0; j<$scope.destoptions.length; j++){
+						if($scope.picklist_dest[i]==$scope.destoptions[j]){
 							idxs.push(j);
 						}
 					}
@@ -78,18 +145,17 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 				for (var i=0; i<idxs.length; i++){
 					var idx=idxs[i];
 					if (idx>0){
-						var temp=models[idx-1];
-						models[idx-1]=models[idx];
-						models[idx]=temp;
+						var temp=$scope.destoptions[idx-1];
+						$scope.destoptions[idx-1]=$scope.destoptions[idx];
+						$scope.destoptions[idx]=temp;
 					}
 				}
 			};
 			$scope.arrowDown=function(){
-				var models=$parse($scope.ngModel)($scope);
 				var idxs=[];
 				for (var i=0; i<$scope.picklist_dest.length; i++){
-					for (var j=0; j<models.length; j++){
-						if($scope.picklist_dest[i]==models[j]){
+					for (var j=0; j<$scope.destoptions.length; j++){
+						if($scope.picklist_dest[i]==$scope.destoptions[j]){
 							idxs.push(j);
 						}
 					}
@@ -97,10 +163,10 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 				idxs.sort();
 				for (var i=idxs.length-1; i>=0; i--){
 					var idx=idxs[i];
-					if (idx<models.length-1){
-						var temp=models[idx+1];
-						models[idx+1]=models[idx];
-						models[idx]=temp;
+					if (idx<$scope.destoptions.length-1){
+						var temp=$scope.destoptions[idx+1];
+						$scope.destoptions[idx+1]=$scope.destoptions[idx];
+						$scope.destoptions[idx]=temp;
 					}
 				}
 				
@@ -121,23 +187,7 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 				}
 			};
 			
-			$scope.srcoptions=[];
-			//set it to $scope.srcoptions
-			$scope.init=function(){
-				var getter = $parse($scope.srcoptionsExp);
-				var options=getter($scope);
-				while($scope.srcoptions.length>0){
-					$scope.srcoptions.pop();
-				}
-				for(var i=0; i<options.length; i++){
-					$scope.srcoptions.push(options[i]);
-				}
-				var models=$parse($scope.ngModel)($scope);
-				$scope.removeLeftFromRight(models, $scope.srcoptions);
-			};
-			//TODO remove watcher during destruction.
-			$scope.$watchCollection($scope.srcoptionsExp, $scope.init);
-			$scope.$watchCollection($scope.ngModel, $scope.init);
+			
 		},
 	}
 }).directive("picklistForm", function($compile, $templateCache){
@@ -174,9 +224,8 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 			$attrs.size=$scope.size;
 			$element.attr("size", $scope.size);
 			$attrs.name=$scope.formname+"_src";
-			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, "srcoptions");
-			
-			
+			//always use item as value.
+			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, "srcoptions").replace(/^.+\s+as\s+/, "");
 		}
 	}
 }).directive("picklistDest", function($compile, $templateCache){
@@ -193,7 +242,8 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 		controller: function($scope, $element, $attrs){
 			$attrs.size=$scope.size;
 			$element.attr("size", $scope.size);
-			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, $scope.ngModel);
+			//always use item as value. real valye is synchoinized to model by watcher function
+			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, "destoptions").replace(/^.+\s+as\s+/, "");
 			$attrs.name=$scope.formname+"_dest";
 		}
 	}

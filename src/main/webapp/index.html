@@ -32,17 +32,43 @@
 
 			</div>
 
-			<div class="form-group">
+			<div class="form-group" data-ng-controller="testCtrl">
 				<label class="col-md-2 control-label">Pick List Test</label>
-				<div class="col-md-4" data-ng-controller="testCtrl">
-					<select name="pktest"  size="20" data-ng-options="v.name for v in toptions" 
-					data-picklist=""
-					multiple data-ng-model="tselected">
+				<div class="col-md-4">
+					<select name="pktest" size="20" data-ng-options="v.name for v in toptions" data-picklist="" multiple data-ng-model="tselected">
 					</select>
+
+				</div>
+				<div class="col-md-4">
+
+					<div>
+						<p>ng-options:v.name for v in toptions</p>
+						<ul>
+							<li data-ng-repeat="s in tselected">{{s.value}}</li>
+						</ul>
+					</div>
 				</div>
 
 			</div>
-			<input class="form-control" name="test" type="text" />
+
+			<div class="form-group" data-ng-controller="testCtrl1">
+				<label class="col-md-2 control-label">Pick List Test 2</label>
+				<div class="col-md-4">
+					<select name="pktest1" size="20" data-ng-options="v.value as v.name for v in toptions" data-picklist="" multiple data-ng-model="tselected">
+					</select>
+
+
+				</div>
+				<div class="col-md-4">
+					<div>
+						<p><p>ng-options:v.value as v.name for v in toptions</p>
+						<ul>
+							<li data-ng-repeat="s in tselected">{{s}}</li>
+						</ul>
+					</div>
+				</div>
+
+			</div>
 
 		</form>
 
