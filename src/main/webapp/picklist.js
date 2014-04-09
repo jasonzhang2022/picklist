@@ -1,4 +1,6 @@
-angular.module("fxpicklist", []).directive("picklist", function($compile, $templateCache){
+
+		
+function fxPickList($compile, $templateCache){
 	
 	/*
 	 * what do we need
@@ -190,7 +192,11 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 			
 		},
 	}
-}).directive("picklistForm", function($compile, $templateCache){
+}
+
+
+		
+function fxPickListForm($compile, $templateCache){
 	
 	/*
 	 * what do we need
@@ -208,7 +214,10 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 			
 		}
 	}
-}).directive("picklistSrc", function($compile, $templateCache){
+}
+
+		
+function fxPickListSrc($compile, $templateCache){
 	
 	/*
 	 * what do we need
@@ -228,7 +237,9 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, "srcoptions").replace(/^.+\s+as\s+/, "");
 		}
 	}
-}).directive("picklistDest", function($compile, $templateCache){
+}
+
+function fxPickListDest($compile, $templateCache){
 	
 	/*
 	 * what do we need
@@ -247,8 +258,9 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 			$attrs.name=$scope.formname+"_dest";
 		}
 	}
-}).run(["$templateCache", function($templateCache) {
-	  $templateCache.put("picklist.html", 
+}
+
+var fxPickListTpl=
 "			  <div style=\"display: table;\" data-ng-form=\"fake\" data-picklist-form>"+
 "		<div style=\"display: table-row;\">"+
 "			<div style=\"display: table-cell; width: 40%;\">"+
@@ -295,7 +307,16 @@ angular.module("fxpicklist", []).directive("picklist", function($compile, $templ
 "			</div>"+
 "		</div>"+
 "	</div>	  "
-	  
-	  );
-			  
+;
+
+		
+
+angular.module("fxpicklist", [])
+.directive("picklist", fxPickList)
+.directive("picklistForm", fxPickListForm)
+.directive("picklistSrc", fxPickListSrc) 
+.directive("picklistDest", fxPickListDest)
+.run(["$templateCache", function($templateCache) {
+	 $templateCache.put("picklist.html", fxPickListTpl);
 }]);
+	 
