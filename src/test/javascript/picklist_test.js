@@ -61,11 +61,11 @@ describe(
 			}
 
 			var template="<form name='test'>" +
-			"<select name='pktest'  size='20' data-ng-options='v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
+			"<picklist name='pktest'  size='20' data-pick-options='v.name for v in toptions' data-picklist data-pick-model='tselected'/>" +
 			"</form>"
 			;
 			var template1="<form name='test'>" +
-			"<select name='pktest'  size='20' data-ng-options='v.value as v.name for v in toptions' data-picklist data-ng-model='tselected'/>" +
+			"<picklist name='pktest'  size='20' data-pick-options='v.value as v.name for v in toptions' data-picklist data-pick-model='tselected'/>" +
 			"</form>"
 			;
 			it("pick list: test initialization", function() {

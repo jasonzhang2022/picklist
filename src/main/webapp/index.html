@@ -35,9 +35,7 @@
 			<div class="form-group" data-ng-controller="testCtrl">
 				<label class="col-md-2 control-label">Pick List Test</label>
 				<div class="col-md-4">
-					<select name="pktest" size="20" data-ng-options="v.name for v in toptions" data-picklist="" multiple data-ng-model="tselected">
-					</select>
-
+					<picklist  name="pktest" size="20"  data-picklist="" data-pick-model="tselected" data-pick-options="v.name for v in toptions"/>
 				</div>
 				<div class="col-md-4">
 
@@ -54,8 +52,8 @@
 			<div class="form-group" data-ng-controller="testCtrl1">
 				<label class="col-md-2 control-label">Pick List Test 2</label>
 				<div class="col-md-4">
-					<select name="pktest1" size="20" data-ng-options="v.value as v.name for v in toptions" data-picklist="" multiple data-ng-model="tselected">
-					</select>
+					<picklist name="pktest1" size="20" data-pick-options="v.value as v.name for v in toptions" data-picklist="" data-pick-model="tselected">
+					</picklist>
 
 
 				</div>

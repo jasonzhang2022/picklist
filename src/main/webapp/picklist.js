@@ -11,17 +11,35 @@ function fxPickList($compile, $templateCache){
 		replace:true,
 		priority:99,
 		templateUrl:"picklist.html",
-		restrict: 'A',
-		terminal:true,
+		restrict: 'E',
+		terminal:false,
 		scope:true, //do not pollute parent scope
 		controller: function($scope, $element, $attrs, $parse){
-			$scope.size=$attrs.size
+			
+			//size
+			$scope.size=$attrs.size;
 			if (!angular.isDefined($scope.size)){
 				$scope.size=10;
 			}
+			
+			//name
 			$scope.formname=$attrs.name;
-			$scope.ngOptions=$attrs.ngOptions;
+			
+			
+			$scope.ngOptions=$attrs.pickOptions;
+			
 			$scope.ngModel=$attrs.ngModel;
+			if (!angular.isDefined($attrs.ngModel)){
+				$scope.ngModel=$attrs.pickModel;
+			}
+			/*
+			 * model directive is never processed.
+			 * The new ctrl is the subform.
+			 */
+			 delete($attrs['ngModel']);
+	         $element.removeAttr('data-ng-model');
+	         $element.removeAttr('ng-model');
+			
 			
 			//hold the selection.
 			$scope.picklist_src=[];
@@ -43,6 +61,11 @@ function fxPickList($compile, $templateCache){
 			var hasValueFn=match[2]?true:false;
 			
 			var modelFn=$parse($scope.ngModel);
+			var models=modelFn($scope);
+			//give models an empty array if needed.
+			if (!angular.isDefined(models) || models==null){
+				modelFn.assign($scope, []);
+			}
 			
 			  $scope.srcoptions=[];
 			 
@@ -57,7 +80,7 @@ function fxPickList($compile, $templateCache){
 				 models.length=0;
 				 angular.forEach($scope.destoptions, function(item){
 					 models.push($scope.itemToValue(item));
-				 })
+				 });
 			  });
 			  
 			 
@@ -135,7 +158,7 @@ function fxPickList($compile, $templateCache){
 				$scope.destoptions.length=0;
 			};
 			$scope.arrowUp=function(){
-				var idxs=[];
+				var idxs=new Array();
 				for (var i=0; i<$scope.picklist_dest.length; i++){
 					for (var j=0; j<$scope.destoptions.length; j++){
 						if($scope.picklist_dest[i]==$scope.destoptions[j]){
@@ -154,7 +177,7 @@ function fxPickList($compile, $templateCache){
 				}
 			};
 			$scope.arrowDown=function(){
-				var idxs=[];
+				var idxs=new Array();
 				for (var i=0; i<$scope.picklist_dest.length; i++){
 					for (var j=0; j<$scope.destoptions.length; j++){
 						if($scope.picklist_dest[i]==$scope.destoptions[j]){
@@ -191,7 +214,7 @@ function fxPickList($compile, $templateCache){
 			
 			
 		},
-	}
+	};
 }
 
 
@@ -213,7 +236,7 @@ function fxPickListForm($compile, $templateCache){
 			}
 			
 		}
-	}
+	};
 }
 
 		
@@ -236,7 +259,7 @@ function fxPickListSrc($compile, $templateCache){
 			//always use item as value.
 			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, "srcoptions").replace(/^.+\s+as\s+/, "");
 		}
-	}
+	};
 }
 
 function fxPickListDest($compile, $templateCache){
@@ -257,11 +280,11 @@ function fxPickListDest($compile, $templateCache){
 			$attrs.ngOptions=$scope.ngOptions.replace($scope.srcoptionsExp, "destoptions").replace(/^.+\s+as\s+/, "");
 			$attrs.name=$scope.formname+"_dest";
 		}
-	}
+	};
 }
 
 var fxPickListTpl=
-"			  <div style=\"display: table;\" data-ng-form=\"fake\" data-picklist-form>"+
+"			  <div style=\"display: table;width:100%\" data-ng-form=\"fake\" data-picklist-form>"+
 "		<div style=\"display: table-row;\">"+
 "			<div style=\"display: table-cell; width: 40%;\">"+
 "				<select multiple size=\"5\" class=\"form-control\" data-ng-options=\"fake\" name=\"fake\" data-ng-model=\"picklist_src\" data-picklist-src>"+

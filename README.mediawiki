@@ -8,8 +8,11 @@ angularjs and bootstrap.css
 ==Usage==
 [[src/main/webapp/picklist.js|download]]
 # add [[src/main/webapp/picklist.js|picklist.js]] after angular.js. Make your module depends on '''fxpicklist'''
-# To use pick list just add '''data-picklist''' to your regular <select> element
-## ngOptions elements expression has to return an array. Object is not supported right now
+# <picklist  name="pktest" size="20"  data-picklist="" data-pick-model="tselected" data-pick-options="v.name for v in toptions"/>
+## data-pick-options has the same syntax as ngOptions for select element.  The return value from the expression has to be an array. Object is not supported right now
+## name: the name the form control field. A subform with this name will be attached under parent form
+##size: how tall the picklist
+##data-pick-model: model to be bound
 
 [[src/main/webapp/index.html|Example]]
 ==test==
