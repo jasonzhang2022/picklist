@@ -68,21 +68,8 @@ function fxPickList($compile, $templateCache){
 			}
 			
 			  $scope.srcoptions=[];
+			  $scope.destoptions=[];
 			 
-			  
-			  //sync destination to model.
-			  $scope.$watchCollection("destoptions", function(newv, oldv){
-				  if (!angular.isDefined(newv)){
-					  //first call
-					  return;
-				  }
-				 var models=modelFn($scope);
-				 models.length=0;
-				 angular.forEach($scope.destoptions, function(item){
-					 models.push($scope.itemToValue(item));
-				 });
-			  });
-			  
 			 
 	         $scope.valueToItem=function(value){
 	            if (!hasValueFn){
@@ -101,10 +88,16 @@ function fxPickList($compile, $templateCache){
 	        };
 	        //set it to $scope.srcoptions
 	        $scope.init=function(){
+	        	$scope.srcoptions.length=0;
+	        	$scope.destoptions.length=0;
 	        	$scope.valueMap={};
+	        	
+	        	
 	        	var getter = $parse($scope.srcoptionsExp);
 	        	var options=getter($scope);
-	        	$scope.srcoptions.length=0;
+	        	if (!options){
+	        		return;
+	        	}
 	        	for(var i=0; i<options.length; i++){
 	        		$scope.srcoptions.push(options[i]);
 	        		//map option value to object
@@ -114,8 +107,6 @@ function fxPickList($compile, $templateCache){
 	        		}
 	        	}
 	        	var models=$parse($scope.ngModel)($scope);
-	        	$scope.destoptions=[];
-	        	$scope.destoptions.length=0;
 	        	angular.forEach(models, function(v){
 	        		$scope.destoptions.push($scope.valueToItem(v));
 	        	});
@@ -123,30 +114,39 @@ function fxPickList($compile, $templateCache){
 	        };
 	        
 	        
-	        //TODO remove watcher during destruction.
 	        $scope.$watchCollection($scope.srcoptionsExp, $scope.init);
 	        $scope.$watchCollection($scope.ngModel, $scope.init);
 	        
-				
+			//always assign to model and expect destoptions is updated from model.
+	        //do not update desttoptions to model.
 			$scope.rightShift=function(){
+				 var models=modelFn($scope);
 				for (var i=0; i<$scope.picklist_src.length; i++){
-					$scope.destoptions.push($scope.picklist_src[i]);
+					models.push($scope.itemToValue($scope.picklist_src[i]));
 				}
 				$scope.removeLeftFromRight($scope.picklist_src, $scope.srcoptions);
 				$scope.picklist_src.length=0;
 			};
 			$scope.rightShiftAll=function(){
+				 var models=modelFn($scope);
 				for (var i=0; i<$scope.srcoptions.length; i++){
-					$scope.destoptions.push($scope.srcoptions[i]);
+					models.push($scope.itemToValue($scope.srcoptions[i]));
 				}
 				$scope.picklist_src.length=0;
 				$scope.srcoptions.length=0;
 			};
 			$scope.leftShift=function(){
+				 var models=modelFn($scope);
 				for (var i=0; i<$scope.picklist_dest.length; i++){
 					$scope.srcoptions.push($scope.picklist_dest[i]);
 				}
 				$scope.removeLeftFromRight($scope.picklist_dest, $scope.destoptions);
+				while(models.length>0){
+					models.pop();
+				}
+				angular.forEach($scope.destoptions, function(item){
+					models.push($scope.itemToValue(item));
+				});
 				$scope.picklist_dest.length=0;
 			};
 			
@@ -156,6 +156,9 @@ function fxPickList($compile, $templateCache){
 				}
 				$scope.picklist_dest.length=0;
 				$scope.destoptions.length=0;
+				while(models.length>0){
+					models.pop();
+				}
 			};
 			$scope.arrowUp=function(){
 				var idxs=new Array();
@@ -175,6 +178,12 @@ function fxPickList($compile, $templateCache){
 						$scope.destoptions[idx]=temp;
 					}
 				}
+				while(models.length>0){
+					models.pop();
+				}
+				angular.forEach($scope.destoptions, function(item){
+					models.push($scope.itemToValue(item));
+				});
 			};
 			$scope.arrowDown=function(){
 				var idxs=new Array();
@@ -194,7 +203,12 @@ function fxPickList($compile, $templateCache){
 						$scope.destoptions[idx]=temp;
 					}
 				}
-				
+				while(models.length>0){
+					models.pop();
+				}
+				angular.forEach($scope.destoptions, function(item){
+					models.push($scope.itemToValue(item));
+				});
 			};
 			
 			
