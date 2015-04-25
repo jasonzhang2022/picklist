@@ -300,7 +300,7 @@ function fxPickListDest($compile, $templateCache){
 var fxPickListTpl=
 "			  <div style=\"display: table;width:100%\" data-ng-form=\"fake\" data-picklist-form>"+
 "		<div style=\"display: table-row;\">"+
-"			<div style=\"display: table-cell; width: 40%;\">"+
+"			<div style=\"display: table-cell; width: 40%;vertical-align: middle;\">"+
 "				<select multiple size=\"5\" class=\"form-control\" data-ng-options=\"fake\" name=\"fake\" data-ng-model=\"picklist_src\" data-picklist-src>"+
 "				</select>"+
 "			</div>"+
@@ -326,7 +326,7 @@ var fxPickListTpl=
 "					</button>"+
 "				</div>"+
 "			</div>"+
-"			<div style=\"display: table-cell; width: 40%;\">"+
+"			<div style=\"display: table-cell; width: 40%;vertical-align: middle;\">"+
 "				<select multiple size=\"5\" class=\"form-control\" data-ng-options=\"fake\" name=\"fake\" data-ng-model=\"picklist_dest\" data-picklist-dest>"+
 "				</select>"+
 "			</div>"+
